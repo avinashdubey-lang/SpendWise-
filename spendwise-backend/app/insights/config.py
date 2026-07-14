@@ -1,0 +1,5 @@
+from decimal import Decimal
+
+BUDGET_SAFE_THRESHOLD = Decimal("25")
+BUDGET_WARNING_THRESHOLD = Decimal("75")
+NON_ESSENTIAL_ALERT_THRESHOLD = Decimal("40")
