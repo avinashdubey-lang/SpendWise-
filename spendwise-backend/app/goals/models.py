@@ -27,6 +27,11 @@ class FinancialGoal(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     name = Column(String, nullable=False)
     target_amount = Column(Numeric, nullable=False)
+    saved_amount = Column(
+        Numeric,
+        nullable=False,
+        default=0,
+    )
     deadline = Column(Date, nullable=False)
     reason = Column(String, nullable=False)
     priority_position = Column(Integer, nullable=False)

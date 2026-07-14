@@ -21,6 +21,7 @@ def create_goal(
         user_id=user_id,
         name=goal_data.name,
         target_amount=goal_data.target_amount,
+        saved_amount=goal_data.saved_amount,
         deadline=goal_data.deadline,
         reason=goal_data.reason,
         priority_position=priority_position,
