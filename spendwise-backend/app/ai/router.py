@@ -16,8 +16,16 @@ from app.analysis.exceptions import (
     MonthlyFinanceNotFoundError,
 )
 
-from app.ai.schemas import AIContext
-from app.ai.service import build_ai_context
+from app.ai.schemas import (
+    AIContext,
+    AIChatRequest,
+    AIChatResponse,
+)
+
+from app.ai.service import (
+    build_ai_context,
+    generate_ai_response,
+)
 
 
 router = APIRouter(
@@ -43,6 +51,41 @@ def get_ai_context(
             month=month,
             year=year,
         )
+
+    except FutureMonthAnalysisError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Future month analysis is not available",
+        )
+
+    except MonthlyFinanceNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Monthly finance not found",
+        )
+    
+
+@router.post(
+    "/chat",
+    response_model=AIChatResponse,
+)
+def chat_with_ai(
+    chat_data: AIChatRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        response = generate_ai_response(
+            db=db,
+            user_id=current_user.id,
+            month=chat_data.month,
+            year=chat_data.year,
+            question=chat_data.question,
+        )
+
+        return {
+            "response": response,
+        }
 
     except FutureMonthAnalysisError:
         raise HTTPException(
