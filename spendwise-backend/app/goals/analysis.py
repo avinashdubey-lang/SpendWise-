@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 from app.goals.models import FinancialGoal
 from app.goals.schemas import GoalAnalysisResponse
 
+from app.utils.money import round_money
+
 
 def calculate_remaining_amount(
     target_amount: Decimal,
@@ -14,9 +16,11 @@ def calculate_remaining_amount(
 
     remaining_amount = target_amount - saved_amount
 
-    return max(
-        remaining_amount,
-        Decimal("0"),
+    return round_money(
+        max(
+            remaining_amount,
+            Decimal("0"),
+        )
     )
 
 
@@ -32,9 +36,11 @@ def calculate_progress_percentage(
         saved_amount / target_amount
     ) * Decimal("100")
 
-    return min(
-        progress,
-        Decimal("100"),
+    return round_money(
+        min(
+            progress,
+            Decimal("100"),
+        )
     )
 
 

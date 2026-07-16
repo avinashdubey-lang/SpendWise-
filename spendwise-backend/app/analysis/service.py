@@ -16,6 +16,8 @@ from decimal import Decimal
 from sqlalchemy import func
 from app.expenses.models import Expense
 
+from app.utils.money import round_money
+
 
 def get_category_breakdown(
     db: Session,
@@ -107,8 +109,8 @@ def get_monthly_analysis(
         category_breakdown.append(
             {
                 "category": category,
-                "amount": amount,
-                "percentage": percentage,
+                "amount": round_money(amount),
+                "percentage": round_money(percentage),
             }
         )
     
@@ -129,7 +131,7 @@ def get_monthly_analysis(
     projected_overspending = max(
         projected_month_end_spending
         - monthly_finance.available_money,
-        0,
+        Decimal("0"),
     )
 
     remaining_money = (
@@ -138,7 +140,7 @@ def get_monthly_analysis(
 
     overspent_amount = max(
         total_spending - monthly_finance.available_money,
-        0,
+        Decimal("0"),
     )
 
     if requested_month == current_month:
@@ -151,17 +153,23 @@ def get_monthly_analysis(
             remaining_money / remaining_days
         )
     else:
-        remaining_daily_allowance = 0
+        remaining_daily_allowance = Decimal("0")
 
     return {
-        "available_money": monthly_finance.available_money,
-        "total_spending": total_spending,
-        "remaining_money": remaining_money,
-        "spending_percentage": spending_percentage,
-        "average_daily_spending": average_daily_spending,
-        "remaining_daily_allowance": remaining_daily_allowance,
-        "overspent_amount": overspent_amount,
-        "projected_month_end_spending": projected_month_end_spending,
-        "projected_overspending": projected_overspending,
+        "available_money": round_money(monthly_finance.available_money),
+        "total_spending": round_money(total_spending),
+        "remaining_money": round_money(remaining_money),
+        "spending_percentage": round_money(spending_percentage),
+        "average_daily_spending": round_money(average_daily_spending),
+        "remaining_daily_allowance": round_money(
+            Decimal(str(remaining_daily_allowance))
+        ),
+        "overspent_amount": round_money(overspent_amount),
+        "projected_month_end_spending": round_money(
+            projected_month_end_spending
+        ),
+        "projected_overspending": round_money(
+            projected_overspending
+        ),
         "category_breakdown": category_breakdown,
     }

@@ -4,7 +4,7 @@ from app.ai.schemas import AIContext
 
 from app.analysis.service import get_monthly_analysis
 from app.insights.service import get_monthly_insights
-from app.goals.service import get_user_goals
+from app.goals.service import get_goal_analysis
 from app.expenses.service import get_recent_expenses
 
 from app.ai.client import client
@@ -34,7 +34,7 @@ def build_ai_context(
         year=year,
     )
 
-    goals = get_user_goals(
+    goal_analysis = get_goal_analysis(
         db=db,
         user_id=user_id,
     )
@@ -47,7 +47,7 @@ def build_ai_context(
     return AIContext(
         analysis=analysis,
         insights=insights,
-        goals=goals,
+        goal_analysis=goal_analysis,
         recent_expenses=recent_expenses,
     )
 
