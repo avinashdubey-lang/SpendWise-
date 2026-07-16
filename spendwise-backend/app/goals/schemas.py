@@ -27,3 +27,14 @@ class FinancialGoalResponse(BaseModel):
 
 class GoalReorderRequest(BaseModel):
     new_position: int = Field(ge=1)
+
+
+class GoalAnalysisResponse(BaseModel):
+    goal_name: str
+    target_amount: Decimal
+    saved_amount: Decimal
+    remaining_amount: Decimal
+    progress_percentage: Decimal
+    months_remaining: int
+    required_monthly_saving: Decimal
+    status: str

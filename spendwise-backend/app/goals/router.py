@@ -8,12 +8,14 @@ from app.goals.schemas import (
     FinancialGoalCreate,
     FinancialGoalResponse,
     GoalReorderRequest,
+    GoalAnalysisResponse,
 )
 from app.goals.service import (
     create_goal,
     get_user_goals,
     delete_goal,
     reorder_goal,
+    get_goal_analysis,
 )
 
 
@@ -100,3 +102,17 @@ def change_goal_priority(
         )
 
     return goal
+
+
+@router.get(
+    "/analysis",
+    response_model=list[GoalAnalysisResponse],
+)
+def get_goals_analysis(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return get_goal_analysis(
+        db=db,
+        user_id=current_user.id,
+    )

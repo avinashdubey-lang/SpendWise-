@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from app.goals.models import FinancialGoal
 from app.goals.schemas import FinancialGoalCreate
 
+from app.goals.analysis import analyze_goal
+from app.goals.schemas import GoalAnalysisResponse
+
 
 def create_goal(
     db: Session,
@@ -149,3 +152,19 @@ def reorder_goal(
     db.refresh(goal)
 
     return goal
+
+
+def get_goal_analysis(
+    db: Session,
+    user_id: int,
+) -> list[GoalAnalysisResponse]:
+
+    goals = get_user_goals(
+        db=db,
+        user_id=user_id,
+    )
+
+    return [
+        analyze_goal(goal)
+        for goal in goals
+    ]
