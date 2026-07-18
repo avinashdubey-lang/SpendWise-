@@ -12,7 +12,19 @@ from app.ai.prompts import (
     SPENDWISE_SYSTEM_PROMPT,
     build_user_prompt,
 )
+
+from fastapi import HTTPException, status
+
+from google.genai.errors import (
+    ServerError,
+    ClientError,
+)
+
+import logging
+
 from google.genai import types
+
+logger = logging.getLogger(__name__)
 
 def build_ai_context(
     db: Session,
@@ -71,12 +83,37 @@ def generate_ai_response(
         question=question,
     )
 
-    response = client.models.generate_content(
-        model="gemini-flash-latest",
-        contents=user_prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=SPENDWISE_SYSTEM_PROMPT,
-        ),
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-flash-latest",
+            contents=user_prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=SPENDWISE_SYSTEM_PROMPT,
+            ),
+        )
 
-    return response.text
+        return response.text
+
+    except ServerError as e:
+        logger.exception(e)
+
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI service is temporarily unavailable. Please try again later.",
+        )
+
+    except ClientError as e:
+        logger.exception(e)
+
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Unable to process the AI request.",
+        )
+
+    except Exception as e:
+        logger.exception(e)
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unexpected AI service error.",
+        )

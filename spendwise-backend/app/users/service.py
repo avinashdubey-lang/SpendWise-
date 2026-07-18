@@ -26,3 +26,6 @@ def create_user(db: Session, user_data: UserCreate):
     db.refresh(user)
 
     return user
+
+def get_current_user_profile(current_user):
+    return current_user

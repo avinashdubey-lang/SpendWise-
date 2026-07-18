@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.database import Base, engine
+from app.database import engine
 from app.users import models as user_models
 from app.finances import models as finance_models
 from app.goals import models as goal_models
@@ -14,12 +14,21 @@ from app.goals.router import router as goal_router
 from app.analysis.router import router as analysis_router
 from app.insights.router import router as insights_router
 from app.ai.router import router as ai_router
+from fastapi.middleware.cors import CORSMiddleware
 
 
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(user_router)
 app.include_router(expense_router)
