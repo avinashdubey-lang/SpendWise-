@@ -14,6 +14,7 @@ from app.goals.router import router as goal_router
 from app.analysis.router import router as analysis_router
 from app.insights.router import router as insights_router
 from app.ai.router import router as ai_router
+from app.dashboard.router import router as dashboard_router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -38,3 +39,4 @@ app.include_router(goal_router)
 app.include_router(analysis_router)
 app.include_router(insights_router)
 app.include_router(ai_router)
+app.include_router(dashboard_router)
