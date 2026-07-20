@@ -12,6 +12,14 @@ class FinancialGoalCreate(BaseModel):
     reason: str
 
 
+class FinancialGoalUpdate(BaseModel):
+    name: str | None = None
+    target_amount: Decimal | None = Field(default=None, gt=0)
+    saved_amount: Decimal | None = Field(default=None, ge=0)
+    deadline: date | None = None
+    reason: str | None = None
+
+
 class FinancialGoalResponse(BaseModel):
     id: int
     user_id: int

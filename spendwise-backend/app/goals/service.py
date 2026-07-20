@@ -1,10 +1,14 @@
 from sqlalchemy.orm import Session
 
 from app.goals.models import FinancialGoal
-from app.goals.schemas import FinancialGoalCreate
+
 
 from app.goals.analysis import analyze_goal
-from app.goals.schemas import GoalAnalysisResponse
+from app.goals.schemas import (
+    FinancialGoalCreate,
+    FinancialGoalUpdate,
+    GoalAnalysisResponse
+)
 
 
 def create_goal(
@@ -168,3 +172,42 @@ def get_goal_analysis(
         analyze_goal(goal)
         for goal in goals
     ]
+
+
+def update_goal(
+    db: Session,
+    goal_id: int,
+    goal_data: FinancialGoalUpdate,
+    user_id: int,
+):
+    goal = (
+        db.query(FinancialGoal)
+        .filter(
+            FinancialGoal.id == goal_id,
+            FinancialGoal.user_id == user_id,
+        )
+        .first()
+    )
+
+    if goal is None:
+        return None
+
+    if goal_data.name is not None:
+        goal.name = goal_data.name
+
+    if goal_data.target_amount is not None:
+        goal.target_amount = goal_data.target_amount
+
+    if goal_data.saved_amount is not None:
+        goal.saved_amount = goal_data.saved_amount
+
+    if goal_data.deadline is not None:
+        goal.deadline = goal_data.deadline
+
+    if goal_data.reason is not None:
+        goal.reason = goal_data.reason
+
+    db.commit()
+    db.refresh(goal)
+
+    return goal

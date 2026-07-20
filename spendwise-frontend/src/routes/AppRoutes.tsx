@@ -34,60 +34,16 @@ const DashboardPage: React.FC = () => {
   return <Dashboard />
 }
 
+import ExpensesPageFeature from '@/features/expenses/ExpensesPage'
+
 const ExpensesPage: React.FC = () => {
-  return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="Expenses" 
-        subtitle="Monitor, categorize, and control your day-to-day expenditures."
-        action={
-          <Button variant="primary">
-            + Add Expense
-          </Button>
-        }
-      />
-      <Card className="p-6">
-        <EmptyState 
-          icon={<Receipt className="h-10 w-10 text-slate-400" />}
-          title="No expenses tracked yet" 
-          description="Connect your account or manually log your first transaction to initiate financial analysis." 
-          action={
-            <Button variant="primary">
-              Log First Expense
-            </Button>
-          }
-        />
-      </Card>
-    </div>
-  )
+  return <ExpensesPageFeature />
 }
 
+import GoalsPageFeature from '@/features/goals/GoalsPage'
+
 const GoalsPage: React.FC = () => {
-  return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="Financial Goals" 
-        subtitle="Establish financial landmarks and build steady savings habits."
-        action={
-          <Button variant="primary" icon={<Target className="h-4 w-4" />}>
-            New Goal
-          </Button>
-        }
-      />
-      <Card className="p-6">
-        <EmptyState 
-          icon={<PiggyBank className="h-10 w-10 text-slate-400" />}
-          title="Create your first financial target" 
-          description="Whether it's an emergency fund, travel, or retirement, defining your goals is the first step to achieving them." 
-          action={
-            <Button variant="primary">
-              Define Goal
-            </Button>
-          }
-        />
-      </Card>
-    </div>
-  )
+  return <GoalsPageFeature />
 }
 
 const AnalysisPage: React.FC = () => {

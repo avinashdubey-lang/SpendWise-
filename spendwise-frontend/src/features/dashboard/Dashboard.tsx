@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/providers/AuthProvider'
 import { 
@@ -26,7 +26,6 @@ import {
   CreditCard,
   Target,
   Sparkles,
-  ArrowRight,
   TrendingUp,
   Calendar,
   Wallet,
@@ -34,13 +33,50 @@ import {
   PieChart
 } from 'lucide-react'
 
+import { 
+  PieChart as RechartsPieChart, 
+  Pie, 
+  Cell, 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer 
+} from 'recharts'
+
+const CATEGORY_COLORS: Record<string, string> = {
+  Food: '#3B82F6',         // Blue
+  Travel: '#10B981',       // Emerald
+  Shopping: '#F59E0B',     // Amber
+  Bills: '#EF4444',        // Red
+  Entertainment: '#8B5CF6', // Purple
+  Transport: '#06B6D4',    // Cyan
+  General: '#6B7280',      // Gray
+  Unknown: '#94A3B8',      // Slate
+  Other: '#94A3B8',
+  Others: '#94A3B8',
+}
+
+const DEFAULT_SLOT_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#6B7280', '#94A3B8']
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload
+    return (
+      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-md text-xs space-y-1 z-50">
+        <p className="font-bold text-slate-800">{data.category}</p>
+        <p className="text-slate-700 font-semibold">{formatCurrency(data.totalSpent)}</p>
+        <p className="text-slate-400 font-medium">{data.percentage}% of total</p>
+      </div>
+    )
+  }
+  return null
+}
+
 function getCategoryIcon(category: string) {
   const c = category.toLowerCase()
   if (c.includes('food') || c.includes('dining') || c.includes('restaurant') || c.includes('swiggy')) return <Utensils className="h-4 w-4" />
-  if (c.includes('transport') || c.includes('cab') || c.includes('travel') || c.includes('uber') || c.includes('fuel')) return <Car className="h-4 w-4" />
-  if (c.includes('shop') || c.includes('apparel') || c.includes('amazon') || c.includes('store')) return <ShoppingBag className="h-4 w-4" />
+  if (c.includes('transport') || c.includes('travel') || c.includes('cab') || c.includes('uber')) return <Car className="h-4 w-4" />
+  if (c.includes('shop') || c.includes('apparel') || c.includes('amazon')) return <ShoppingBag className="h-4 w-4" />
   if (c.includes('bill') || c.includes('utility') || c.includes('rent') || c.includes('electricity')) return <Receipt className="h-4 w-4" />
-  if (c.includes('entertain') || c.includes('movie') || c.includes('netflix') || c.includes('ott')) return <Film className="h-4 w-4" />
+  if (c.includes('entertain') || c.includes('movie') || c.includes('netflix')) return <Film className="h-4 w-4" />
   return <CreditCard className="h-4 w-4" />
 }
 
@@ -74,6 +110,7 @@ function getGreeting(name?: string) {
 export const Dashboard: React.FC = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [activePieIndex, setActivePieIndex] = useState<number | null>(null)
 
   // Queries
   const summaryQuery = useDashboardSummary()
@@ -82,6 +119,8 @@ export const Dashboard: React.FC = () => {
   const categoryQuery = useSpendingByCategory()
 
   const greetingText = getGreeting(user?.name)
+
+  const totalSpentSum = categoryQuery.data ? categoryQuery.data.reduce((sum, item) => sum + item.totalSpent, 0) : 0
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
@@ -288,7 +327,7 @@ export const Dashboard: React.FC = () => {
         {/* RIGHT COLUMN: Section 5 & Section 6 */}
         <div className="space-y-6">
 
-          {/* 5. Spending by Category */}
+          {/* 5. Spending by Category - Animated Recharts Donut Chart */}
           <section>
             <Card className="p-6">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -304,7 +343,7 @@ export const Dashboard: React.FC = () => {
               </div>
 
               {categoryQuery.isLoading ? (
-                <LoadingState variant="inline" text="Fetching category breakdown..." />
+                <LoadingState variant="skeleton" className="h-56" />
               ) : categoryQuery.isError ? (
                 <ErrorState 
                   message="Could not load category spending."
@@ -312,28 +351,83 @@ export const Dashboard: React.FC = () => {
                 />
               ) : !categoryQuery.data || categoryQuery.data.length === 0 ? (
                 <EmptyState 
-                  title="No category spending data"
-                  description="Category insights will populate as transactions are recorded."
+                  title="No expenses this month."
+                  description="Category insights will appear as transactions are recorded."
                 />
               ) : (
                 <div className="space-y-4">
-                  {categoryQuery.data.map((cat) => (
-                    <div key={cat.category} className="space-y-1.5">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="text-slate-700">{cat.category}</span>
-                        <div className="text-right">
-                          <span className="text-slate-800">{formatCurrency(cat.totalSpent)}</span>
-                          <span className="text-slate-400 ml-2">({cat.percentage}%)</span>
-                        </div>
-                      </div>
-                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-accent rounded-full transition-all duration-500"
-                          style={{ width: `${Math.min(100, cat.percentage)}%` }}
-                        />
-                      </div>
+                  {/* Donut Chart with Centered Total */}
+                  <div className="relative h-56 w-full flex items-center justify-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Pie
+                          data={categoryQuery.data}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={55}
+                          outerRadius={85}
+                          paddingAngle={3}
+                          dataKey="totalSpent"
+                          nameKey="category"
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                          isAnimationActive={true}
+                          onMouseEnter={(_, index) => setActivePieIndex(index)}
+                          onMouseLeave={() => setActivePieIndex(null)}
+                        >
+                          {categoryQuery.data.map((entry, index) => {
+                            const color = CATEGORY_COLORS[entry.category] || DEFAULT_SLOT_COLORS[index % DEFAULT_SLOT_COLORS.length]
+                            const isHovered = activePieIndex === index
+                            return (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={color}
+                                style={{
+                                  transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                                  transformOrigin: 'center center',
+                                  transition: 'transform 0.2s ease-in-out',
+                                  cursor: 'pointer'
+                                }}
+                              />
+                            )
+                          })}
+                        </Pie>
+                        <RechartsTooltip content={<CustomTooltip />} />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+
+                    {/* Centered Total Text */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-base font-extrabold text-slate-800 tracking-tight">
+                        {formatCurrency(totalSpentSum)}
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                        Total Spent
+                      </span>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Visually Aligned Legend List */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-100">
+                    {categoryQuery.data.map((cat, idx) => {
+                      const color = CATEGORY_COLORS[cat.category] || DEFAULT_SLOT_COLORS[idx % DEFAULT_SLOT_COLORS.length]
+                      return (
+                        <div 
+                          key={cat.category} 
+                          className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className="h-2.5 w-2.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: color }} />
+                            <span className="font-semibold text-slate-700 truncate">{cat.category}</span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="font-bold text-slate-800">{formatCurrency(cat.totalSpent)}</span>
+                            <span className="text-slate-400 text-[10px] font-medium min-w-[28px] text-right">{cat.percentage}%</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
             </Card>

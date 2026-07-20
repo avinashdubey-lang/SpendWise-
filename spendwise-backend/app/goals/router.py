@@ -9,6 +9,7 @@ from app.goals.schemas import (
     FinancialGoalResponse,
     GoalReorderRequest,
     GoalAnalysisResponse,
+    FinancialGoalUpdate
 )
 from app.goals.service import (
     create_goal,
@@ -16,7 +17,9 @@ from app.goals.service import (
     delete_goal,
     reorder_goal,
     get_goal_analysis,
+    update_goal
 )
+
 
 
 router = APIRouter(
@@ -116,3 +119,29 @@ def get_goals_analysis(
         db=db,
         user_id=current_user.id,
     )
+
+
+@router.put(
+    "/{goal_id}",
+    response_model=FinancialGoalResponse,
+)
+def update_financial_goal(
+    goal_id: int,
+    goal_data: FinancialGoalUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    goal = update_goal(
+        db=db,
+        goal_id=goal_id,
+        goal_data=goal_data,
+        user_id=current_user.id,
+    )
+
+    if goal is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Financial goal not found",
+        )
+
+    return goal
