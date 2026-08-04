@@ -42,9 +42,16 @@ function getStatusBadge(status?: Goal['status']) {
 }
 
 function getPriorityLabel(priority?: number) {
-  if (priority === 3) return 'High Priority'
-  if (priority === 2) return 'Medium Priority'
-  return 'Low Priority'
+  switch (priority) {
+    case 1:
+      return 'High Priority'
+    case 2:
+      return 'Medium Priority'
+    case 3:
+      return 'Low Priority'
+    default:
+      return 'Unknown Priority'
+  }
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({
@@ -59,6 +66,19 @@ export const GoalCard: React.FC<GoalCardProps> = ({
     Math.round(((goal.currentAmount || 0) / (goal.targetAmount || 1)) * 100)
   )
   const remainingAmount = Math.max(0, goal.targetAmount - goal.currentAmount)
+
+function getPriorityColor(priority?: number) {
+  switch (priority) {
+    case 1:
+      return "text-red-500"      // High
+    case 2:
+      return "text-amber-500"    // Medium
+    case 3:
+      return "text-green-500"    // Low
+    default:
+      return "text-slate-400"
+  }
+}
 
   return (
     <Card className="p-6 flex flex-col justify-between hover:shadow-md transition-all duration-200 border border-slate-100/90 relative group">
@@ -128,7 +148,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       {/* Footer & Actions */}
       <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
         <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-          <Flag className="h-3 w-3 text-amber-500" />
+          <Flag className={`h-3 w-3 ${getPriorityColor(goal.priority)}`} />
           {getPriorityLabel(goal.priority)}
         </span>
 

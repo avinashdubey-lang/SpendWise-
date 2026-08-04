@@ -60,7 +60,11 @@ export async function getGoals(): Promise<Goal[]> {
       currentAmount,
       deadline,
       reason: item.reason || item.description || item.notes,
-      priority: Number(item.priority ?? 0),
+      priority: Number(
+          item.priority ??
+          item.priority_position ??
+          0
+      ),
       isPriority: Boolean(item.isPriority ?? item.is_priority ?? false),
       status: computeGoalStatus(item, currentAmount, targetAmount, deadline),
     }
@@ -138,4 +142,15 @@ export async function updateGoal(id: string, payload: UpdateGoalPayload): Promis
 
 export async function deleteGoal(id: string): Promise<void> {
   await api.delete(`/goals/${id}`)
+}
+
+export async function updateGoalPriority(
+  id: string,
+  priority: number
+): Promise<Goal> {
+  const response = await api.put(`/goals/${id}/priority`, {
+    new_position: priority,
+  })
+
+  return response.data
 }

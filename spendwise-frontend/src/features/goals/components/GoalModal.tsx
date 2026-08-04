@@ -14,9 +14,9 @@ interface GoalModalProps {
 }
 
 const PRIORITY_OPTIONS = [
-  { value: 3, label: 'High Priority (Priority 1)' },
+  { value: 1, label: 'High Priority (Priority 1)' },
   { value: 2, label: 'Medium Priority (Priority 2)' },
-  { value: 1, label: 'Low Priority (Priority 3)' },
+  { value: 3, label: 'Low Priority (Priority 3)' },
 ]
 
 export const GoalModal: React.FC<GoalModalProps> = ({

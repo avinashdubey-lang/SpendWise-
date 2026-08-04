@@ -5,7 +5,8 @@ import {
   updateGoal, 
   deleteGoal, 
   CreateGoalPayload, 
-  UpdateGoalPayload 
+  UpdateGoalPayload,
+  updateGoalPriority
 } from '../api/goalApi'
 
 export function useGoals() {
@@ -31,7 +32,24 @@ export function useUpdateGoal() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateGoalPayload }) => updateGoal(id, payload),
+    mutationFn: async ({
+      id,
+      payload,
+    }: {
+      id: string
+      payload: UpdateGoalPayload
+    }) => {
+      // Update goal details
+      const goal = await updateGoal(id, payload)
+
+      // Reorder only if a priority was supplied
+      if (payload.priority !== undefined) {
+        await updateGoalPriority(id, payload.priority)
+      }
+
+      return goal
+    },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
