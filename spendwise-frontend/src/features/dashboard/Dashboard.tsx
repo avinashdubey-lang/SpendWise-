@@ -30,8 +30,13 @@ import {
   Calendar,
   Wallet,
   PiggyBank,
-  PieChart
+  PieChart,
+  Landmark,
+  CheckCircle2
 } from 'lucide-react'
+
+import { useCurrentBudget } from '@/features/budget/hooks/useBudgetData'
+import BudgetModal from '@/features/budget/components/BudgetModal'
 
 import { 
   PieChart as RechartsPieChart, 
@@ -111,20 +116,48 @@ export const Dashboard: React.FC = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [activePieIndex, setActivePieIndex] = useState<number | null>(null)
+  
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const handleShowToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 4000)
+  }
 
   // Queries
   const summaryQuery = useDashboardSummary()
   const topGoalQuery = useTopGoal()
   const recentExpensesQuery = useRecentExpenses()
   const categoryQuery = useSpendingByCategory()
+  const budgetQuery = useCurrentBudget()
 
   const greetingText = getGreeting(user?.name)
 
   const totalSpentSum = categoryQuery.data ? categoryQuery.data.reduce((sum, item) => sum + item.totalSpent, 0) : 0
 
+  const budgetData = budgetQuery.data
+  const hasBudget = budgetData !== null && budgetData !== undefined && budgetData.monthlyAllowance > 0
+
+  const currentMonthName = budgetData?.month || new Date().toLocaleString('en-IN', { month: 'long' })
+  const currentYear = budgetData?.year || new Date().getFullYear()
+
   return (
     <div className="space-y-8 animate-fade-in pb-12">
       
+      {/* Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-800 animate-slide-up text-xs font-semibold">
+          <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+          <div>
+            <p className="font-bold text-white">{toastMessage}</p>
+            <p className="text-[11px] text-slate-400">Dashboard allowance and savings targets synchronized.</p>
+          </div>
+        </div>
+      )}
+
       {/* 1. Greeting Section */}
       <div className="pb-6 border-b border-slate-200/60">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-800">
@@ -134,6 +167,81 @@ export const Dashboard: React.FC = () => {
           Here's your financial summary for this month.
         </p>
       </div>
+
+      {/* Monthly Budget Card */}
+      {budgetQuery.isLoading ? (
+        <Card className="p-4 md:p-6 border border-slate-100">
+          <LoadingState variant="skeleton" className="h-24" />
+        </Card>
+      ) : budgetQuery.isError ? (
+        <Card className="p-4 md:p-6 border border-slate-100">
+          <ErrorState
+            title="Failed to load budget"
+            message="Could not connect to monthly budget service."
+            onRetry={() => budgetQuery.refetch()}
+          />
+        </Card>
+      ) : !hasBudget ? (
+        <Card className="p-4 md:p-6 border border-slate-100 hover:shadow-md transition-shadow">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 md:gap-6">
+            <div className="space-y-2 text-center lg:text-left flex flex-col items-center lg:items-start justify-center lg:justify-start">
+              <div className="flex items-center gap-2">
+                <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-primary">
+                  <Landmark className="h-3 w-3" />
+                </div>
+                <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Monthly Budget</h2>
+              </div>
+              <p className="text-xs text-slate-500">You haven't set a budget for this month.</p>
+            </div>
+            <div className="w-full lg:w-auto shrink-0 mt-2 lg:mt-0">
+              <Button 
+                variant="primary" 
+                onClick={() => setIsBudgetModalOpen(true)}
+                className="w-full lg:w-auto cursor-pointer py-3 lg:py-2 text-xs font-semibold"
+              >
+                Set Monthly Budget
+              </Button>
+            </div>
+          </div>
+        </Card>
+      ) : (
+        <Card className="p-4 md:p-6 border border-slate-100 hover:shadow-md transition-shadow">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 md:gap-6">
+            
+            <div className="space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start justify-center lg:justify-start">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 justify-center lg:justify-start">
+                  <div className="flex h-5 w-5 items-center justify-center rounded bg-primary/10 text-primary">
+                    <Landmark className="h-3 w-3" />
+                  </div>
+                  <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Monthly Budget</h2>
+                </div>
+                <p className="text-xs text-slate-500">Manage your spending limit for this month.</p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 mt-2">
+                <span className="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-tight">
+                  {formatCurrency(budgetData!.monthlyAllowance)}
+                </span>
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                  {currentMonthName} {currentYear}
+                </span>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-auto shrink-0 mt-2 lg:mt-0">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsBudgetModalOpen(true)}
+                className="w-full lg:w-auto cursor-pointer py-3 lg:py-2 text-xs font-semibold"
+              >
+                Update Budget
+              </Button>
+            </div>
+
+          </div>
+        </Card>
+      )}
 
       {/* 2. Summary Cards (4 Cards) */}
       <section className="space-y-3">
@@ -455,6 +563,14 @@ export const Dashboard: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Update Budget Modal */}
+      <BudgetModal
+        isOpen={isBudgetModalOpen}
+        onClose={() => setIsBudgetModalOpen(false)}
+        currentAllowance={budgetData?.monthlyAllowance ?? 0}
+        onSuccess={handleShowToast}
+      />
 
     </div>
   )

@@ -4,6 +4,7 @@ from sqlalchemy import func
 from app.expenses.models import Expense
 from app.expenses.schemas import ExpenseCreate
 from datetime import date
+from decimal import Decimal
 
 
 def create_expense(
@@ -83,7 +84,10 @@ def get_total_spending(
 
     total = query.scalar()
 
-    return total or 0
+    if total is None:
+        return Decimal("0")
+
+    return Decimal(str(total))
 
 
 def get_recent_expenses(

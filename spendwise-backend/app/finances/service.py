@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import date
 
 from app.finances.models import MonthlyFinance
 from app.finances.schemas import MonthlyFinanceCreate
@@ -9,6 +10,9 @@ def set_monthly_finance(
     finance_data: MonthlyFinanceCreate,
     user_id: int,
 ):
+    print(
+        f"SAVING -> user_id={user_id}, month={finance_data.month}, year={finance_data.year}"
+    )
     monthly_finance = (
         db.query(MonthlyFinance)
         .filter(
@@ -36,3 +40,20 @@ def set_monthly_finance(
     db.refresh(monthly_finance)
 
     return monthly_finance
+
+
+def get_current_month_finance(
+    db: Session,
+    user_id: int,
+):
+    today = date.today()
+
+    return (
+        db.query(MonthlyFinance)
+        .filter(
+            MonthlyFinance.user_id == user_id,
+            MonthlyFinance.month == today.month,
+            MonthlyFinance.year == today.year,
+        )
+        .first()
+    )

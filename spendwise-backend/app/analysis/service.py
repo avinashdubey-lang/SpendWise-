@@ -48,6 +48,10 @@ def get_monthly_analysis(
     month: int,
     year: int,
 ):
+
+    print(
+        f"user_id={user_id}, month={month}, year={year}"
+    )
     
     today = date.today()
 
@@ -127,6 +131,7 @@ def get_monthly_analysis(
     projected_month_end_spending = (
         average_daily_spending * last_day
     )
+
 
     projected_overspending = max(
         projected_month_end_spending

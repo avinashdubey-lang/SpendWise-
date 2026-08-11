@@ -1,4 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+)
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -8,7 +12,10 @@ from app.finances.schemas import (
     MonthlyFinanceCreate,
     MonthlyFinanceResponse,
 )
-from app.finances.service import set_monthly_finance
+from app.finances.service import (
+    set_monthly_finance,
+    get_current_month_finance,
+)
 
 
 router = APIRouter(
@@ -31,3 +38,24 @@ def set_finance(
         finance_data=finance_data,
         user_id=current_user.id,
     )
+
+@router.get(
+    "/current",
+    response_model=MonthlyFinanceResponse,
+)
+def get_current_finance(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    finance = get_current_month_finance(
+        db=db,
+        user_id=current_user.id,
+    )
+
+    if finance is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Monthly finance not found",
+        )
+
+    return finance

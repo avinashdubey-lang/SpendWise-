@@ -46,6 +46,7 @@ const GoalsPage: React.FC = () => {
   return <GoalsPageFeature />
 }
 
+
 const AnalysisPage: React.FC = () => {
   return (
     <div className="space-y-6">
@@ -64,58 +65,10 @@ const AnalysisPage: React.FC = () => {
   )
 }
 
+import AICoachFeature from '@/features/ai/AICoach'
+
 const AICoachPage: React.FC = () => {
-  return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="AI Mentor Coach" 
-        subtitle="Get instant personalized financial feedback and budget optimization tips."
-      />
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2 p-6 flex flex-col h-[500px] justify-between">
-          <div className="flex-1 overflow-y-auto space-y-4">
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary text-xs font-semibold shrink-0">
-                AI
-              </div>
-              <div className="bg-slate-50 p-4 rounded-2xl max-w-[80%]">
-                <p className="text-sm text-slate-700 leading-relaxed">
-                  Hi Alex! I'm your SpendWise AI Mentor. I analyze your spending behavior and help you build financial discipline. What financial query or goal can I assist you with today?
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <Input 
-              placeholder="Ask me anything (e.g., 'How can I save $500 this month?')" 
-              className="flex-1"
-            />
-            <Button variant="primary">Send</Button>
-          </div>
-        </Card>
-        
-        <div className="space-y-4">
-          <Card className="p-6">
-            <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2 mb-3">
-              <Sparkles className="h-4 w-4 text-primary" />
-              Suggested Prompts
-            </h3>
-            <div className="space-y-2 text-xs">
-              <button className="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                "Where did I spend the most last week?"
-              </button>
-              <button className="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                "Help me design a budget for dining out."
-              </button>
-              <button className="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                "Am I on track to meet my Emergency Fund goal?"
-              </button>
-            </div>
-          </Card>
-        </div>
-      </div>
-    </div>
-  )
+  return <AICoachFeature />
 }
 
 const SettingsPage: React.FC = () => {

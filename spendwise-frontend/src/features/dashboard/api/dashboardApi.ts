@@ -11,7 +11,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   const response = await api.get('/dashboard/summary')
   const data = response.data || {}
 
-  const monthlyAllowance = Number(data.monthlyAllowance ?? data.monthly_allowance ?? data.allowance ?? 0)
+  const monthlyAllowance = Number(data.monthlyAllowance ?? data.monthly_allowance ?? data.allowance ?? data.available_money ?? 0)
   const totalSpent = Number(data.totalSpent ?? data.total_spent ?? data.spent ?? 0)
   const remainingBalance = Number(data.remainingBalance ?? data.remaining_balance ?? data.remaining ?? (monthlyAllowance - totalSpent))
   
