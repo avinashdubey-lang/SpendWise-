@@ -4,7 +4,7 @@ import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import { Goal } from '../api/goalApi'
 import { formatCurrency } from '@/lib/utils'
-import { Target, Calendar, Flag, Edit3, Trash2, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react'
+import { Target, Calendar, Flag, Edit3, Trash2, AlertCircle } from 'lucide-react'
 
 interface GoalCardProps {
   goal: Goal

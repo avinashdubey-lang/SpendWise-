@@ -8,23 +8,12 @@ import { getCurrentUser } from '@/features/auth/api/userApi'
 
 // Shared UI components to showcase in placeholders
 import PageHeader from '@/components/common/PageHeader'
-import StatCard from '@/components/common/StatCard'
 import EmptyState from '@/components/feedback/EmptyState'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 
-import { 
-  Sparkles, 
-  Target, 
-  Receipt, 
-  BarChart3, 
-  Settings as SettingsIcon,
-  HelpCircle,
-  PiggyBank,
-  ArrowUpRight,
-  TrendingDown
-} from 'lucide-react'
+import { BarChart3 } from 'lucide-react'
 
 // Placeholder Views for the frontend foundation (no actual feature business logic)
 
@@ -231,7 +220,7 @@ const RegisterPage: React.FC = () => {
         <Button 
           variant="primary" 
           className="w-full justify-center mt-2 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-          onClick={() => login('mock-jwt-token-123')}
+          onClick={() => login({ id: 'mock-user-123', name: 'Alex Mercer', email: 'you@example.com' })}
         >
           Create Account
         </Button>

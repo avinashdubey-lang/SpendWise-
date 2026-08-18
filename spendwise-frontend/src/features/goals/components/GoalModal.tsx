@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
-import { X, Target, Flag, Calendar, AlignLeft, PiggyBank } from 'lucide-react'
+import { X, Target } from 'lucide-react'
 import { Goal } from '../api/goalApi'
 import { useCreateGoal, useUpdateGoal } from '../hooks/useGoalData'
 

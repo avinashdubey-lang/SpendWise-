@@ -3,10 +3,10 @@ import { getDashboardSummary } from '../api/dashboardApi'
 import { getTopGoal } from '@/features/goals/api/goalApi'
 import { getRecentExpenses, getSpendingByCategory } from '@/features/expenses/api/expenseApi'
 
-export function useDashboardSummary() {
+export function useDashboardSummary(month?: number, year?: number) {
   return useQuery({
-    queryKey: ['dashboard', 'summary'],
-    queryFn: getDashboardSummary,
+    queryKey: ['dashboard', 'summary', month, year],
+    queryFn: () => getDashboardSummary(month, year),
   })
 }
 

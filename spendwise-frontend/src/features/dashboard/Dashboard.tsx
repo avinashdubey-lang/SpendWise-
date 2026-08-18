@@ -10,7 +10,6 @@ import {
 
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import Badge from '@/components/ui/Badge'
 import StatCard from '@/components/common/StatCard'
 import EmptyState from '@/components/feedback/EmptyState'
 import LoadingState from '@/components/feedback/LoadingState'
@@ -25,7 +24,6 @@ import {
   Film, 
   CreditCard,
   Target,
-  Sparkles,
   TrendingUp,
   Calendar,
   Wallet,
@@ -37,6 +35,7 @@ import {
 
 import { useCurrentBudget } from '@/features/budget/hooks/useBudgetData'
 import BudgetModal from '@/features/budget/components/BudgetModal'
+import SpendingInsights from '@/features/insights/components/SpendingInsights'
 
 import { 
   PieChart as RechartsPieChart, 
@@ -128,21 +127,25 @@ export const Dashboard: React.FC = () => {
   }
 
   // Queries
-  const summaryQuery = useDashboardSummary()
-  const topGoalQuery = useTopGoal()
-  const recentExpensesQuery = useRecentExpenses()
-  const categoryQuery = useSpendingByCategory()
+  // Queries
   const budgetQuery = useCurrentBudget()
-
-  const greetingText = getGreeting(user?.name)
-
-  const totalSpentSum = categoryQuery.data ? categoryQuery.data.reduce((sum, item) => sum + item.totalSpent, 0) : 0
-
   const budgetData = budgetQuery.data
   const hasBudget = budgetData !== null && budgetData !== undefined && budgetData.monthlyAllowance > 0
 
   const currentMonthName = budgetData?.month || new Date().toLocaleString('en-IN', { month: 'long' })
   const currentYear = budgetData?.year || new Date().getFullYear()
+  const currentMonthNumber = budgetData?.month 
+    ? (new Date(Date.parse(`${budgetData.month} 1, 2012`)).getMonth() + 1) || (new Date().getMonth() + 1)
+    : new Date().getMonth() + 1
+
+  const summaryQuery = useDashboardSummary(currentMonthNumber, currentYear)
+  const topGoalQuery = useTopGoal()
+  const recentExpensesQuery = useRecentExpenses()
+  const categoryQuery = useSpendingByCategory()
+
+  const greetingText = getGreeting(user?.name)
+
+  const totalSpentSum = categoryQuery.data ? categoryQuery.data.reduce((sum, item) => sum + item.totalSpent, 0) : 0
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
@@ -288,6 +291,9 @@ export const Dashboard: React.FC = () => {
           </div>
         )}
       </section>
+
+      {/* Spending Insights Section */}
+      <SpendingInsights month={currentMonthNumber} year={currentYear} />
 
       {/* Grid wrapper for responsive desktop/tablet arrangement of Sections 3-6 */}
       <div className="grid gap-6 lg:grid-cols-2">
@@ -540,26 +546,6 @@ export const Dashboard: React.FC = () => {
               )}
             </Card>
           </section>
-
-          {/* 6. AI Coach Card */}
-          <section>
-            <Card className="p-6 border border-slate-200 bg-slate-50/50 relative overflow-hidden">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🤖</span>
-                  <h2 className="text-base font-bold text-slate-800">AI Coach</h2>
-                </div>
-                <Badge variant="secondary" className="text-[10px] uppercase font-bold tracking-wider">
-                  Coming Soon
-                </Badge>
-              </div>
-
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Personalized financial insights will appear here after the Financial Analysis Engine is completed.
-              </p>
-            </Card>
-          </section>
-
         </div>
 
       </div>

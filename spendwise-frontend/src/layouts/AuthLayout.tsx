@@ -1,12 +1,9 @@
-import React from 'react'
-import { Outlet, Navigate, Link } from 'react-router-dom'
+import { Outlet, Navigate } from 'react-router-dom'
 import { useAuth } from '@/providers/AuthProvider'
 import { 
   Landmark, 
-  ShieldCheck, 
   Sparkles, 
   Target, 
-  CheckCircle2, 
   Lock, 
   BrainCircuit, 
   TrendingUp,
@@ -14,7 +11,7 @@ import {
   PieChart
 } from 'lucide-react'
 
-export const AuthLayout: React.FC = () => {
+export const AuthLayout = () => {
   const { isAuthenticated, isLoading } = useAuth()
 
   // Redirect authenticated users to dashboard

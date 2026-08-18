@@ -7,23 +7,33 @@ export interface DashboardSummary {
   savingsRate: number
 }
 
-export async function getDashboardSummary(): Promise<DashboardSummary> {
-  const response = await api.get('/dashboard/summary')
-  const data = response.data || {}
+export async function getDashboardSummary(month?: number, year?: number): Promise<DashboardSummary> {
+  const m = month || new Date().getMonth() + 1
+  const y = year || new Date().getFullYear()
+  try {
+    const response = await api.get(`/analysis/monthly?month=${m}&year=${y}`)
+    const data = response.data || {}
 
-  const monthlyAllowance = Number(data.monthlyAllowance ?? data.monthly_allowance ?? data.allowance ?? data.available_money ?? 0)
-  const totalSpent = Number(data.totalSpent ?? data.total_spent ?? data.spent ?? 0)
-  const remainingBalance = Number(data.remainingBalance ?? data.remaining_balance ?? data.remaining ?? (monthlyAllowance - totalSpent))
-  
-  let savingsRate = Number(data.savingsRate ?? data.savings_rate ?? 0)
-  if (!savingsRate && monthlyAllowance > 0) {
-    savingsRate = Math.max(0, Math.round(((monthlyAllowance - totalSpent) / monthlyAllowance) * 100))
-  }
+    const monthlyAllowance = Number(data.available_money ?? 0)
+    const totalSpent = Number(data.total_spending ?? 0)
+    const remainingBalance = Number(data.remaining_money ?? (monthlyAllowance - totalSpent))
+    const savingsRate = Math.max(0, Math.round(100 - Number(data.spending_percentage ?? 0)))
 
-  return {
-    monthlyAllowance,
-    totalSpent,
-    remainingBalance,
-    savingsRate,
+    return {
+      monthlyAllowance,
+      totalSpent,
+      remainingBalance,
+      savingsRate,
+    }
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return {
+        monthlyAllowance: 0,
+        totalSpent: 0,
+        remainingBalance: 0,
+        savingsRate: 0,
+      }
+    }
+    throw error
   }
 }

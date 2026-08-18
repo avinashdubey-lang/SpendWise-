@@ -84,3 +84,24 @@
 - `[x]` Added smooth scrolling helper refs focused on list elements
 - `[x]` Styled user message bubbles aligned on the right and AI coach bubbles aligned on the left
 - `[x]` Registered and mounted functional component layout inside router in `AppRoutes.tsx`
+
+## AI Coach Markdown Rendering Redesign & Readability Fix (Follow-up)
+- `[x]` Built custom Markdown parser component `Markdown.tsx` styling markdown syntaxes
+- `[x]` Ensured pure vertical document block layout flow, completely avoiding CSS grids or side-by-side columns
+- `[x]` Configured headers (e.g. `### 1. Title` -> `Title`) to render clean, readable inline blocks without numerical prefixes
+- `[x]` Kept list items (ordered and unordered) rendering vertically with inline bolding and margins
+- `[x]` Formatted Markdown table data into styled scrolling containers
+- `[x]` Increased bubble maximum width to `max-w-[90%] md:max-w-[80%]` for horizontal breathing room on mobile viewports
+
+## Dashboard Spending Insights Integration (Follow-up)
+- `[x]` Created folder `src/features/insights/` for insights components and hooks
+- `[x]` Built frontend client `insightsApi.ts querying `GET /insights/monthly?month={month}&year={year}`
+- `[x]` Built React Query hook `useMonthlyInsights(month, year)` mapping to cache configurations
+- `[x]` Created responsive component `SpendingInsights.tsx` displaying top 4 observations with border indicators for priority levels
+- `[x]` Mounted `SpendingInsights` directly on Dashboard below Summary Cards metrics
+- `[x]` Extended `useCreateExpense` onSuccess hook in `useExpenseData.ts` to invalidate `['insights']` cache on success
+
+## Dashboard Remaining Balance Mapping Fix (Follow-up)
+- `[x]` Mapped backend properties `available_money` -> `monthlyAllowance`, `total_spending` -> `totalSpent`, and `remaining_money` -> `remainingBalance` inside `dashboardApi.ts`
+- `[x]` Fixed incorrect balance presentation rendering original monthly budget instead of actual remaining cash balance
+- `[x]` Confirmed budget values remain persistent while only remaining cash balances diminish on logging expenses

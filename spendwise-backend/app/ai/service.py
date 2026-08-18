@@ -83,9 +83,12 @@ def generate_ai_response(
         question=question,
     )
 
+    print("AI PROMPT LENGTH:", len(user_prompt))
+    print("AI PROMPT PREVIEW:", user_prompt[:1000])
+
     try:
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-3.6-flash",
             contents=user_prompt,
             config=types.GenerateContentConfig(
                 system_instruction=SPENDWISE_SYSTEM_PROMPT,

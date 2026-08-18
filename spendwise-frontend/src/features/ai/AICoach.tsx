@@ -5,7 +5,8 @@ import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 import { useAuth } from '@/providers/AuthProvider'
 import { useAIChat } from './hooks/useAIChat'
-import { Sparkles, MessageSquare, Send, ArrowRight } from 'lucide-react'
+import { Sparkles, Send, ArrowRight } from 'lucide-react'
+import Markdown from './components/Markdown'
 
 type ChatMessage = {
   role: 'user' | 'assistant'
@@ -134,12 +135,16 @@ export const AICoach: React.FC = () => {
                   </div>
 
                   {/* Message Bubble */}
-                  <div className={`p-4 rounded-2xl max-w-[80%] leading-relaxed text-sm ${
+                  <div className={`p-4 rounded-2xl max-w-[90%] md:max-w-[80%] leading-relaxed text-sm ${
                     isAI 
                       ? 'bg-slate-50 border border-slate-100 text-slate-700 rounded-tl-xs' 
                       : 'bg-primary text-white rounded-tr-xs shadow-sm shadow-primary/10'
                   }`}>
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                    {isAI ? (
+                      <Markdown content={msg.content} />
+                    ) : (
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                    )}
                   </div>
                 </div>
               )
