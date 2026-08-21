@@ -20,3 +20,25 @@ export async function login(
 
     return response.data;
 }
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export async function register(
+  payload: RegisterRequest
+): Promise<RegisterResponse> {
+  const response = await api.post<RegisterResponse>(
+    "/users/register",
+    payload
+  );
+  return response.data;
+}

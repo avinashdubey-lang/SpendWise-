@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react
 import DashboardLayout from '@/layouts/DashboardLayout'
 import AuthLayout from '@/layouts/AuthLayout'
 import { useAuth } from '@/providers/AuthProvider'
-import { login } from '@/features/auth/api/authApi'
+import { login, register } from '@/features/auth/api/authApi'
 import { getCurrentUser } from '@/features/auth/api/userApi'
 
 // Shared UI components to showcase in placeholders
@@ -182,7 +182,67 @@ const LoginPage: React.FC = () => {
 }
 
 const RegisterPage: React.FC = () => {
-  const { login } = useAuth()
+  const [name, setName] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [errorMsg, setErrorMsg] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const auth = useAuth()
+  const navigate = useNavigate()
+
+  const handleRegister = async () => {
+    setErrorMsg('')
+    if (!name.trim() || !email.trim() || !password) {
+      setErrorMsg('All fields are required.')
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      // 1. Call register
+      await register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      })
+
+      // 2. Call login
+      let loginRes
+      try {
+        loginRes = await login({
+          email: email.trim(),
+          password,
+        })
+      } catch (loginErr) {
+        setErrorMsg('Account created successfully, but automatic login failed. Please sign in manually.')
+        setIsLoading(false)
+        return
+      }
+
+      // 3. Store token
+      localStorage.setItem("token", loginRes.access_token)
+
+      // 4. Fetch profile
+      const user = await getCurrentUser()
+      await auth.login(user)
+
+      // 5. Navigate to Dashboard
+      navigate('/dashboard')
+    } catch (err: any) {
+      const status = err.response?.status
+      if (status === 409) {
+        setErrorMsg('Email already registered.')
+      } else if (status === 400 || status === 422) {
+        setErrorMsg('Invalid registration data. Please verify your details.')
+      } else {
+        setErrorMsg(err.response?.data?.detail || err.response?.data?.message || 'Failed to create account. Please try again.')
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-1">
@@ -195,18 +255,27 @@ const RegisterPage: React.FC = () => {
         <Input 
           label="Full Name" 
           placeholder="Alex Mercer" 
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={isLoading}
           className="focus:ring-emerald-500/10 focus:border-emerald-500"
         />
         <Input 
           label="Email Address" 
           placeholder="you@example.com" 
           type="email" 
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
           className="focus:ring-emerald-500/10 focus:border-emerald-500"
         />
         <Input 
           label="Password" 
           type="password" 
           placeholder="••••••••"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
           className="focus:ring-emerald-500/10 focus:border-emerald-500"
         />
         
@@ -217,10 +286,18 @@ const RegisterPage: React.FC = () => {
           <a href="#" className="text-slate-500 underline hover:text-slate-700">Privacy Policy</a>.
         </p>
 
+        {errorMsg && (
+          <p className="text-xs font-semibold text-danger leading-normal px-0.5">
+            {errorMsg}
+          </p>
+        )}
+
         <Button 
           variant="primary" 
           className="w-full justify-center mt-2 cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-          onClick={() => login({ id: 'mock-user-123', name: 'Alex Mercer', email: 'you@example.com' })}
+          onClick={handleRegister}
+          isLoading={isLoading}
+          disabled={isLoading}
         >
           Create Account
         </Button>

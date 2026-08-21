@@ -105,3 +105,31 @@
 - `[x]` Mapped backend properties `available_money` -> `monthlyAllowance`, `total_spending` -> `totalSpent`, and `remaining_money` -> `remainingBalance` inside `dashboardApi.ts`
 - `[x]` Fixed incorrect balance presentation rendering original monthly budget instead of actual remaining cash balance
 - `[x]` Confirmed budget values remain persistent while only remaining cash balances diminish on logging expenses
+
+## Donut Chart Layout & Active Spacing Fix (Follow-up)
+- `[x]` Increased donut hole inner radius from 55 to 60 (expanding to 120px diameter)
+- `[x]` Reduced donut chart outer radius from 85 to 80 (shrinking to 160px diameter)
+- `[x]` Removed floating absolute `RechartsTooltip` clashing with list components
+- `[x]` Implemented interactive center donut hole text rendering active segment hover amounts and percentages dynamically
+- `[x]` Cleaned up unused Recharts imports and styles in Dashboard
+
+## Goal progress saved_amount Mapping Fix (Follow-up)
+- `[x]` Mapped currentAmount to saved_amount in createGoal and updateGoal requests in goalApi.ts
+- `[x]` Preserved targetAmount, deadline, and reason inputs
+- `[x]` Confirmed goals and dashboard query invalidation triggers
+- `[x]` Verified compilation builds compile successfully
+
+## AI Coach Conversation State Persistence (Follow-up)
+- `[x]` Added namespaced storage key based on active user id
+- `[x]` Initialized messages state from localStorage on component mount
+- `[x]` Set up useEffect hook updating localStorage on new messages or assistant answers
+- `[x]` Mounted "Clear Chat" button inside PageHeader actions rendering block
+- `[x]` Checked that navigation, page refresh, and clear chat triggers operate correctly
+- `[x]` Verified build bundles build cleanly without any errors
+
+## Registration Flow Backend Authentication Integration (Follow-up)
+- `[x]` Implemented register API function targeting POST /users/register in authApi.ts
+- `[x]` Replaced static mock submit flow with stateful handleRegister in RegisterPage component inside AppRoutes.tsx
+- `[x]` Automatically triggers login and profiles loading queries on successful registration
+- `[x]` Persists JWT access tokens to local storage and updates authentication provider session state
+- `[x]` Verified build compiles correctly for deployment

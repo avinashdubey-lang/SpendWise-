@@ -41,7 +41,6 @@ import {
   PieChart as RechartsPieChart, 
   Pie, 
   Cell, 
-  Tooltip as RechartsTooltip, 
   ResponsiveContainer 
 } from 'recharts'
 
@@ -60,19 +59,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 const DEFAULT_SLOT_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#6B7280', '#94A3B8']
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload
-    return (
-      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-md text-xs space-y-1 z-50">
-        <p className="font-bold text-slate-800">{data.category}</p>
-        <p className="text-slate-700 font-semibold">{formatCurrency(data.totalSpent)}</p>
-        <p className="text-slate-400 font-medium">{data.percentage}% of total</p>
-      </div>
-    )
-  }
-  return null
-}
+
 
 function getCategoryIcon(category: string) {
   const c = category.toLowerCase()
@@ -478,8 +465,8 @@ export const Dashboard: React.FC = () => {
                           data={categoryQuery.data}
                           cx="50%"
                           cy="50%"
-                          innerRadius={55}
-                          outerRadius={85}
+                          innerRadius={60}
+                          outerRadius={80}
                           paddingAngle={3}
                           dataKey="totalSpent"
                           nameKey="category"
@@ -506,18 +493,37 @@ export const Dashboard: React.FC = () => {
                             )
                           })}
                         </Pie>
-                        <RechartsTooltip content={<CustomTooltip />} />
                       </RechartsPieChart>
                     </ResponsiveContainer>
 
-                    {/* Centered Total Text */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <span className="text-base font-extrabold text-slate-800 tracking-tight">
-                        {formatCurrency(totalSpentSum)}
-                      </span>
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                        Total Spent
-                      </span>
+                    {/* Centered Total and Hover Info */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
+                      {activePieIndex !== null && categoryQuery.data[activePieIndex] ? (
+                        <div className="flex flex-col items-center justify-center text-center animate-fade-in">
+                          <span className="text-[11px] font-bold text-slate-400">
+                            {formatCurrency(totalSpentSum)}
+                          </span>
+                          <span className="text-[8px] font-semibold text-slate-400 uppercase tracking-wider">
+                            Total Spent
+                          </span>
+                          <div className="w-8 h-px bg-slate-100 my-1" />
+                          <span className="text-sm font-extrabold text-slate-800 tracking-tight">
+                            {formatCurrency(categoryQuery.data[activePieIndex].totalSpent)}
+                          </span>
+                          <span className="text-[9px] font-semibold text-slate-500 truncate max-w-[90px] block mt-0.5">
+                            {categoryQuery.data[activePieIndex].category} ({categoryQuery.data[activePieIndex].percentage}%)
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center text-center">
+                          <span className="text-lg font-extrabold text-slate-800 tracking-tight">
+                            {formatCurrency(totalSpentSum)}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">
+                            Total Spent
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

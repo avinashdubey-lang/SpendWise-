@@ -28,9 +28,25 @@ export const AICoach: React.FC = () => {
   const userName = user?.name ? user.name.split(' ')[0] : 'Alex'
   const initialWelcome = `Hi ${userName}! I'm your SpendWise AI Mentor. I analyze your spending behavior and help you build financial discipline. What financial query or goal can I assist you with today?`
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: initialWelcome }
-  ])
+  const storageKey = user?.id ? `spendwise-ai-chat-${user.id}` : 'spendwise-ai-chat-default'
+
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse chat messages from localStorage:', e)
+      try {
+        localStorage.removeItem(storageKey)
+      } catch {}
+    }
+    return [{ role: 'assistant', content: initialWelcome }]
+  })
 
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -42,9 +58,30 @@ export const AICoach: React.FC = () => {
     }
   }
 
+  // Persist messages to localStorage on every update
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(messages))
+    } catch (e) {
+      console.error('Failed to save chat messages to localStorage:', e)
+    }
+  }, [messages, storageKey])
+
   useEffect(() => {
     scrollToBottom()
   }, [messages, chatMutation.isPending])
+
+  const handleClearChat = () => {
+    const confirmClear = window.confirm("Are you sure you want to clear your chat history?")
+    if (confirmClear) {
+      setMessages([{ role: 'assistant', content: initialWelcome }])
+      try {
+        localStorage.removeItem(storageKey)
+      } catch (e) {
+        console.error('Failed to clear chat messages from localStorage:', e)
+      }
+    }
+  }
 
   const getErrorMessage = (error: any) => {
     if (!error) return 'An unexpected error occurred.'
@@ -106,6 +143,16 @@ export const AICoach: React.FC = () => {
       <PageHeader 
         title="AI Mentor Coach" 
         subtitle="Get instant personalized financial feedback and budget optimization tips."
+        action={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClearChat}
+            className="text-slate-500 hover:text-danger border-slate-200 hover:border-danger/20 hover:bg-danger/5 transition-all text-xs font-semibold py-2 px-3 h-9"
+          >
+            Clear Chat
+          </Button>
+        }
       />
 
       <div className="grid gap-6 md:grid-cols-3 items-start">
