@@ -107,3 +107,25 @@ def get_recent_expenses(
         .limit(limit)
         .all()
     )
+
+def delete_expense(
+    db: Session,
+    expense_id: int,
+    user_id: int,
+):
+    expense = (
+        db.query(Expense)
+        .filter(
+            Expense.id == expense_id,
+            Expense.user_id == user_id,
+        )
+        .first()
+    )
+
+    if expense is None:
+        return None
+
+    db.delete(expense)
+    db.commit()
+
+    return expense

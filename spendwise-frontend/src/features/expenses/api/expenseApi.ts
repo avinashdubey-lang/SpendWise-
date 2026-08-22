@@ -93,3 +93,7 @@ export async function createExpense(payload: CreateExpensePayload): Promise<Expe
   })
   return response.data
 }
+
+export async function deleteExpense(id: string): Promise<void> {
+  await api.delete(`/expenses/${id}`)
+}

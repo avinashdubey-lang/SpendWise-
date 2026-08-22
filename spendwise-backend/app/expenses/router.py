@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date
 
@@ -7,10 +7,12 @@ from app.expenses.schemas import ExpenseCreate, ExpenseResponse, SpendingSummary
 from app.expenses.service import (
     create_expense,
     get_user_expenses,
-    get_total_spending
+    get_total_spending,
+    delete_expense
 )
 from app.users.models import User
 from app.auth.dependencies import get_current_user
+
 
 
 router = APIRouter(
@@ -76,3 +78,26 @@ def spending_summary(
     return {
         "total_spending": total,
     }
+
+@router.delete(
+    "/{expense_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def remove_expense(
+    expense_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    expense = delete_expense(
+        db=db,
+        expense_id=expense_id,
+        user_id=current_user.id,
+    )
+
+    if expense is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Expense not found",
+        )
+
+    return None

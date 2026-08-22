@@ -5,7 +5,7 @@ import {
   LayoutDashboard, 
   Receipt, 
   Target, 
-  BarChart3, 
+  BookOpen, 
   MessageSquare, 
   Settings,
   Menu,
@@ -41,7 +41,7 @@ export const DashboardLayout: React.FC = () => {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Expenses', path: '/expenses', icon: Receipt },
     { name: 'Goals', path: '/goals', icon: Target },
-    { name: 'Analysis', path: '/analysis', icon: BarChart3 },
+    { name: 'My Lessons', path: '/lessons', icon: BookOpen },
     { name: 'AI Coach', path: '/ai', icon: MessageSquare },
     { name: 'Settings', path: '/settings', icon: Settings },
   ]

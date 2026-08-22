@@ -133,3 +133,27 @@
 - `[x]` Automatically triggers login and profiles loading queries on successful registration
 - `[x]` Persists JWT access tokens to local storage and updates authentication provider session state
 - `[x]` Verified build compiles correctly for deployment
+
+## Expense Deletion Integration (Follow-up)
+- `[x]` Used existing `useDeleteExpense()` React Query hook
+- `[x]` Configured hover-triggered `Trash2` action buttons inside ExpenseTable.tsx actions column
+- `[x]` Implemented confirm overlay dialog displaying active name before deleting
+- `[x]` Blocked double-deletes during pending mutations (`deleteMutation.isPending`)
+- `[x]` Handled mutation error reporting and state resetting
+- `[x]` Verified invalidation caches trigger refreshes for expenses, dashboard metrics, goals, and insights automatically
+
+## My Lessons Section Integration (Follow-up)
+- `[x]` Created LessonsPage.tsx under new features directory `/lessons`
+- `[x]` Removed AnalysisPage placeholder and registered new /lessons route path in AppRoutes.tsx
+- `[x]` Updated navItems list configuration in DashboardLayout.tsx with My Lessons title and BookOpen icon
+- `[x]` Configured 5 deterministic, highly personalized lesson cards (Convenience Spending, Needs vs Wants, Pacing, Goal-oriented Saving, Savings habits)
+- `[x]` Coded loading state panels and data-based empty status alerts
+- `[x]` Verified that backend folders (app/analysis) remain untouched
+- `[x]` Confirmed Vite bundler compiles successfully
+
+## My Lessons Copy Corrections (Follow-up)
+- `[x]` Replaced current savings rate wording with monthly allowance unspent percentage phrasing
+- `[x]` Corrected pacing takeaway to recommend putting part of remaining balance to high-priority goals
+- `[x]` Fixed broken sentence in Habits lesson to refer to keeping a large portion of allowance unspent
+- `[x]` Refined Habits lesson explanation text to resolve sentence repetition
+- `[x]` Ran production compilation checking builds bundle correctly

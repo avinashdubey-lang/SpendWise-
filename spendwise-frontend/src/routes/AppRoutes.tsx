@@ -8,12 +8,10 @@ import { getCurrentUser } from '@/features/auth/api/userApi'
 
 // Shared UI components to showcase in placeholders
 import PageHeader from '@/components/common/PageHeader'
-import EmptyState from '@/components/feedback/EmptyState'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
 
-import { BarChart3 } from 'lucide-react'
 
 // Placeholder Views for the frontend foundation (no actual feature business logic)
 
@@ -35,23 +33,10 @@ const GoalsPage: React.FC = () => {
   return <GoalsPageFeature />
 }
 
+import LessonsPageFeature from '@/features/lessons/LessonsPage'
 
-const AnalysisPage: React.FC = () => {
-  return (
-    <div className="space-y-6">
-      <PageHeader 
-        title="Spending Analysis" 
-        subtitle="In-depth breakdown of your cashflow, categories, and trends."
-      />
-      <Card className="p-6">
-        <EmptyState 
-          icon={<BarChart3 className="h-10 w-10 text-slate-400" />}
-          title="Visual analytics will display here" 
-          description="We are gathering transaction logs. Once we process sufficient data, beautiful charts and interactive breakdowns will be generated." 
-        />
-      </Card>
-    </div>
-  )
+const LessonsPage: React.FC = () => {
+  return <LessonsPageFeature />
 }
 
 import AICoachFeature from '@/features/ai/AICoach'
@@ -337,7 +322,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
           <Route path="/goals" element={<GoalsPage />} />
-          <Route path="/analysis" element={<AnalysisPage />} />
+          <Route path="/lessons" element={<LessonsPage />} />
           <Route path="/ai" element={<AICoachPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
