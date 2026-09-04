@@ -13,7 +13,6 @@ from app.finances import models as finance_models
 from app.goals import models as goal_models
 from app.expenses import models as expense_models
 
-DATABASE_URL = "postgresql+psycopg2://postgres:PostgreSQL27@localhost/spendwise"
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
